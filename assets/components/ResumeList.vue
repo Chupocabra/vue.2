@@ -94,13 +94,6 @@ export default {
     clickCard(item) {
       this.$router.push({ name: 'edit', params: { id: item.id } });
     },
-    async onMove({relatedContext, draggedContext}) {
-      // const relatedElement = relatedContext.element;
-      // const draggedElement = draggedContext.element;
-      // console.log(draggedElement.id + relatedElement.Status);
-      // await Api.post(`/api/cv/${draggedElement.id}/status/update`, { status: relatedElement.Status });
-      // return (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed;
-    }
   },
   computed: {
     drag() {
