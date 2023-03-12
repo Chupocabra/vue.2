@@ -4,7 +4,7 @@
   <div>
     <div class="card-header">{{ fio }}</div>
     <div>Профессия: {{ profession }}</div>
-    <div>Дата рождения: {{ age }}</div>
+    <div>Возраст: {{ age }}</div>
   </div>
 </div>
 </template>
@@ -12,7 +12,12 @@
 <script>
 export default {
   name: "ResumeCard",
-  props: ['photo', 'fio', 'profession', 'age'],
+  props: ['photo', 'fio', 'profession', 'bday'],
+  computed: {
+    age(){
+      return (new Date().getFullYear() - new Date(this.bday).getFullYear());
+    }
+  }
 }
 </script>
 

@@ -5,13 +5,13 @@
         <h3>Новый ({{ newResume.length }})</h3>
       </div>
       <div class="col">
-        <h3>Назначено собеседование ()</h3>
+        <h3>Назначено собеседование ({{ waitResume.length }})</h3>
       </div>
       <div class="col">
-        <h3>Принят ()</h3>
+        <h3>Принят ({{ acceptedResume.length }})</h3>
       </div>
       <div class="col">
-        <h3>Отказ ()</h3>
+        <h3>Отказ ({{ refusedResume.length }})</h3>
       </div>
     </div>
     <div class="row">
@@ -21,13 +21,12 @@
             <resume-card
                 :fio="item.FIO"
                 :profession="item.Profession"
-                :age="item.BirthDate"
+                :bday="item.BirthDate"
                 :photo="item.Photo"
                 @click="clickCard(item)"
             ></resume-card>
           </li>
         </transition-group>
-
       </div>
       <div class="col-lg-3 col-6 mt-3">
         <transition-group type="transition" name="flip-list">
@@ -35,7 +34,7 @@
             <resume-card
                 :fio="item.FIO"
                 :profession="item.Profession"
-                :age="item.BirthDate"
+                :bday="nitem.BirthDate"
                 :photo="item.Photo"
                 @click="clickCard(item)"
             ></resume-card>
@@ -48,7 +47,7 @@
             <resume-card
                 :fio="item.FIO"
                 :profession="item.Profession"
-                :age="item.BirthDate"
+                :bday="item.BirthDate"
                 :photo="item.Photo"
                 @click="clickCard(item)"
             ></resume-card>
@@ -61,7 +60,7 @@
             <resume-card
                 :fio="item.FIO"
                 :profession="item.Profession"
-                :age="item.BirthDate"
+                :bday="item.BirthDate"
                 :photo="item.Photo"
                 @click="clickCard(item)"
             ></resume-card>
