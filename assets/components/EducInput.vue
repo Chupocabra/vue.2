@@ -21,7 +21,7 @@
   </div>
 
   <div v-for="(secondEd, index) in education.secondEducation" v-bind:key="secondEd">
-    <select-val v-if="haveSecondEd" v-model="secondEd.educationType" value-name="Образование" :options="educationOpt"/>
+    <select-val v-if="haveSecondEd" v-model="secondEd.Type" value-name="Образование" :options="educationOpt"/>
     <div v-if="haveSecondEd" class="form-group">
       <div v-if="secondEd.educationType != 'Среднее'">
         <div style="display: flex; justify-content: space-between">
@@ -30,7 +30,6 @@
             <span @click="deleteEd(index)" class="btn btn-outline-danger btn-sm pull-right">Удалить</span>
           </p>
         </div>
-        <resume-input v-model="secondEd.city" value-name="Город"/>
         <resume-input v-model="secondEd.university" value-name="Учебное заведение"/>
         <resume-input v-model="secondEd.faculty" value-name="Факультет"/>
         <resume-input v-model="secondEd.specialization" value-name="Специализация"/>
@@ -52,7 +51,7 @@ import token from '../token.json';
 
 export default {
   name: "EducInp",
-  props: ['modelValue', 'city'],
+  props: ['modelValue', 'city', 'educationFromDb'],
   components: {
     SelectVal,
     ResumeInput,
@@ -94,7 +93,7 @@ export default {
   },
   watch: {
     education: {
-      handler(val){
+      handler(val) {
         jsonp(`https://api.vk.com/method/database.getCities?country_id=1&q=${this.city}&count=1&v=5.131&access_token=${token.vkToken}`,
             null, (error, data) => {
               if (error) {
@@ -153,11 +152,11 @@ export default {
       this.haveSecondEd = true;
       this.education.secondEducation.push({
         city: '',
-        educationType: 'Высшее',
+        type: 'Высшее',
         university: '',
         faculty: '',
         specialization: '',
-        endYear: '',
+        end_year: '',
       });
       this.$emit('update:modelValue', this.education);
     },
@@ -165,6 +164,28 @@ export default {
       this.education.secondEducation.splice(index, 1);
     }
   },
+  created() {
+    if(this.educationFromDb.Type!== undefined){
+      this.haveSecondEd = true;
+      this.educationType = this.educationFromDb.Type;
+      this.education.type = this.educationFromDb.Type;
+      this.education.faculty = this.educationFromDb.Faculty;
+      this.education.university = this.educationFromDb.University;
+      this.education.specialization = this.educationFromDb.Specialization;
+      this.education.endYear = this.educationFromDb.EndYear;
+      let array =[];
+      for(let i = 0; i < this.educationFromDb.secondEducation.length; ++i){
+        this.education.secondEducation.type = this.educationFromDb.secondEducation[i].Type;
+      }
+      // this.educationFromDb.secondEducation.forEach((element) => {
+      //   this.education.secondEducation = array.push(element);
+      // })
+      console.log(array);
+      this.education.secondEducation = array;
+      console.log(this.education.secondEducation);
+    }
+
+  }
 }
 </script>
 

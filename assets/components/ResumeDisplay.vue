@@ -1,23 +1,25 @@
 <template>
   <div class="container px-2 mb-2">
-    <div class="row g-0 vh-100">
+    <div class="row g-0 vh-100" v-if="!loading">
       <div class="col-md-6">
         <form id="resume_Form" v-on:submit.prevent>
           <h1 style="text-align: center">Ваше резюме</h1>
-          <select-val v-model="status" value-name="Статус" :options="options.statusOpt"/>
-          <resume-input v-model="prof" value-name="Профессия"/>
-          <city-inp v-model="city"/>
-          <resume-input v-model="photo" value-name="Фото"/>
-          <resume-input v-model="fio" value-name="Фамилия Имя Отчество"/>
-          <resume-input v-model="phone" value-name="Телефон" small-info="Только цифры!"/>
-          <resume-input v-model="email" value-name="Электронная почта" small-info="example@mail.ru"/>
-          <resume-input tip="date" v-model="birthday" value-name="Дата рождения"/>
-          <educ-inp v-model="education" :city="city"/>
-          <select-val v-model="salary" value-name="Желаемая зарплата" :options="options.salaryOpt"/>
-          <key-skills v-model="key_skills"/>
+          <select-val v-model="resume.status" value-name="Статус" :options="options.statusOpt"/>
+          <resume-input v-model="resume.prof" value-name="Профессия"/>
+          <city-inp v-model="resume.city"/>
+          <resume-input v-model="resume.photo" value-name="Фото"/>
+          <resume-input v-model="resume.fio" value-name="Фамилия Имя Отчество"/>
+          <resume-input v-model="resume.phone" value-name="Телефон" small-info="Только цифры!"/>
+          <resume-input v-model="resume.email" value-name="Электронная почта" small-info="example@mail.ru"/>
+          <resume-input tip="date" v-model="resume.birthday" value-name="Дата рождения"/>
+
+          <educ-inp v-model="resume.education" :city="resume.city" :educationFromDb="resume.education"/>
+
+          <select-val v-model="resume.salary" value-name="Желаемая зарплата" :options="options.salaryOpt"/>
+          <key-skills v-model="resume.key_skills"/>
           <div class="form-group">
             <label for="description">О себе</label>
-            <textarea maxlength="240" v-model="description" class="form-control" id="description" rows="5"
+            <textarea maxlength="240" v-model="resume.description" class="form-control" id="description" rows="5"
                       style="resize: none"
                       placeholder="Напишите пару слов о себе"/>
           </div>
@@ -29,40 +31,42 @@
       <div class="col-md-6">
         <h1 style="text-align: center">Итоговое резюме</h1>
         <div class="border border-2">
-          <div class="text-center fs-5" :class="statusClass">{{ status }}</div>
+          <div class="text-center fs-5" :class="statusClass">{{ resume.status }}</div>
           <photo-and-name :city="r_city" :fio="r_fio" :photo="r_photo"></photo-and-name>
           <div class="row row-cols-2  ms-1">
-            <resume-out value-name="Профессия" :value="prof"/>
+            <resume-out value-name="Профессия" :value="resume.prof"/>
             <resume-out value-name="Телефон" :value="r_phone" :error="errors.phoneError" :light="true"/>
             <resume-out value-name="Email" :value="r_email" :error="errors.emailError"/>
             <resume-out value-name="Дата рождения" :value="r_birthday" :error="errors.birthdayError" :light="true"/>
             <resume-out :light="true" value-name="Возраст" :error="errors.birthdayError" :value="age"/>
           </div>
-          <educ-out :education="education"/>
+          <educ-out :education="resume.education"/>
           <div class="row row-cols-2 ms-1">
-            <resume-out :light="true" value-name="Желаемая зарплата" :value="salary"/>
+            <resume-out :light="true" value-name="Желаемая зарплата" :value="resume.salary"/>
             <resume-out value-name="Ключевые навыки"/>
-            <resume-out v-for="(keySkill) in key_skills" v-bind:key="keySkill.id" :value="keySkill.title"/>
+            <resume-out v-for="(keySkill) in resume.key_skills" v-bind:key="keySkill.id" :value="keySkill.title"/>
           </div>
           <div class="fs-5 col bg-light  ms-1" style="padding-bottom: 0px">
             <div>Описание</div>
-            <textarea v-model="description" class="form-control" disabled id="r_description" rows="5" style="resize: none"/>
+            <textarea v-model="resume.description" class="form-control" disabled id="r_description" rows="5"
+                      style="resize: none"/>
           </div>
         </div>
       </div>
     </div>
+    <div v-else>Загрузка...</div>
   </div>
 </template>
 
 <script>
-import ResumeOut from "./ResumeOut";
+import ResumeOut from "./ResumeOutput";
 import ResumeInput from "./ResumeInput";
 import PhotoAndName from "./PhotoAndName";
 import SelectVal from "./SelectVal";
 import KeySkills from "./KeySkills";
-import EducInp from "./EducInp";
-import EducOut from "./EducOut";
-import CityInp from "./CityInp";
+import EducInp from "./EducInput";
+import EducOut from "./EducOutput";
+import CityInp from "./CityInput";
 import {Api} from "../api/Api";
 
 export default {
@@ -77,26 +81,46 @@ export default {
     ResumeInput,
     PhotoAndName,
   },
+  created() {
+    if (this.id) {
+      this.loadResume(this.id);
+    }
+  },
+  props: {
+    id: {
+      type: String,
+      required: false,
+      default: null,
+    },
+  },
   data() {
     return {
-      status: 'Новый',
-      prof: '',
-      city: '',
-      photo: '',
-      fio: '',
-      phone: '',
-      email: '',
-      birthday: '',
-      education: {
-        type: 'Среднее'
-      },
-      salary: 'до 50 тыс',
-      key_skills: [
-        {
-          title: 'Обучаемость'
+      resume: {
+        status: 'Новый',
+        prof: '',
+        city: '',
+        photo: '',
+        fio: '',
+        phone: '',
+        email: '',
+        birthday: '',
+        education: {
+          type: 'Среднее',
+          university: '',
+          faculty: '',
+          specialization: '',
+          endYear: '',
+          secondEducation: [],
         },
-      ],
-      description: '',
+        salary: 'до 50 тыс',
+        key_skills: [
+          {
+            id: 1,
+            title: 'Обучаемость'
+          },
+        ],
+        description: '',
+      },
       errors: {
         birthdayError: false,
         emailError: false,
@@ -116,48 +140,49 @@ export default {
           'Отказ',
         ],
       },
+      loading: false,
     }
   },
   computed: {
     r_city: function () {
-      if (this.city === '') return "г. Город";
-      return "г. " + this.city;
+      if (this.resume.city === '') return "г. Город";
+      return "г. " + this.resume.city;
     },
     r_fio: function () {
-      if (this.fio === '') return "Фамилия Имя Отчество";
-      return this.fio;
+      if (this.resume.fio === '') return "Фамилия Имя Отчество";
+      return this.resume.fio;
     },
     r_photo: function () {
-      return this.validPicture(this.photo);
+      return this.validPicture(this.resume.photo);
     },
     r_phone: function () {
-      if (this.phone === '') return '';
-      else if (this.validPhone(this.phone)) {
-        return this.phone;
+      if (this.resume.phone === '') return '';
+      else if (this.validPhone(this.resume.phone)) {
+        return this.resume.phone;
       } else {
         return "Телефон может состоять только из цифр и иметь длину от 6 до 10 символов.";
       }
     },
     r_email: function () {
-      if (this.email === '') return '';
-      else if (this.validEmail(this.email)) {
-        return this.email;
+      if (this.resume.email === '') return '';
+      else if (this.validEmail(this.resume.email)) {
+        return this.resume.email;
       } else {
         return "Формат почты неверный";
       }
     },
     r_birthday: function () {
-      if (this.birthday === '') return '';
-      let db = this.birthday.split('-');
-      if (!this.birthday || (this.age > 120) || (this.age < 0)) {
+      if (this.resume.birthday === '') return '';
+      let db = this.resume.birthday.split('-');
+      if (!this.resume.birthday || (this.resume.age > 120) || (this.resume.age < 0)) {
         return "Какая?";
       } else {
         return db[2] + '.' + db[1] + '.' + db[0];
       }
     },
     age: function () {
-      if (this.birthday === '') return '';
-      let db = this.birthday.split('-');
+      if (this.resume.birthday === '') return '';
+      let db = this.resume.birthday.split('-');
       let now = new Date();
       let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       let dob = new Date(db[0], db[1] - 1, db[2]); //Дата рождения
@@ -168,20 +193,28 @@ export default {
       if (today < dobnow) {
         age = age - 1;
       }
-      if (!this.birthday || (age > 120) || (age < 0)) {
+      if (!this.resume.birthday || (age > 120) || (age < 0)) {
         return "?";
       } else {
         return this.age_postscript(age);
       }
     },
-    statusClass: function() {
-      switch (this.status){
-        case this.options.statusOpt[0]: return 'text-primary';
-        case this.options.statusOpt[1]: return 'text-info';
-        case this.options.statusOpt[2]: return 'text-success';
-        case this.options.statusOpt[3]: return 'text-danger';
-        default: return '';
+    statusClass: function () {
+      switch (this.resume.status) {
+        case this.options.statusOpt[0]:
+          return 'text-primary';
+        case this.options.statusOpt[1]:
+          return 'text-info';
+        case this.options.statusOpt[2]:
+          return 'text-success';
+        case this.options.statusOpt[3]:
+          return 'text-danger';
+        default:
+          return '';
       }
+    },
+    resumeEdit: function () {
+      return !!this.id;
     }
   },
   watch: {
@@ -235,35 +268,71 @@ export default {
         else return age + " года";
       } else return age + " лет";
     },
-    async save(){
-      if(!(this.errors.emailError || this.errors.birthdayError || this.errors.phoneError)){
-        //отредактировано или добавлено
+    async save() {
+      if (!(this.errors.emailError || this.errors.birthdayError || this.errors.phoneError)) {
         let data = {
-          status: this.status,
-          profession: this.prof,
-          city: this.city,
-          photo: this.photo,
-          fio: this.fio,
-          phone: this.phone,
-          email: this.email,
-          birth_date: this.birthday,
-          salary: this.salary,
-          key_skills: JSON.stringify(this.key_skills),
-          about: this.description,
+          status: this.resume.status,
+          profession: this.resume.prof,
+          city: this.resume.city,
+          photo: this.resume.photo,
+          fio: this.resume.fio,
+          phone: this.resume.phone,
+          email: this.resume.email,
+          birth_date: this.resume.birthday,
+          salary: this.resume.salary,
+          key_skills: JSON.stringify(this.resume.key_skills),
+          about: this.resume.description,
           education: {
-            type: this.education.type,
-            university: this.education.university,
-            faculty: this.education.faculty,
-            specialization: this.education.specialization,
-            end_year: this.education.endYear,
+            type: this.resume.education.type,
+            university: this.resume.education.university,
+            faculty: this.resume.education.faculty,
+            specialization: this.resume.education.specialization,
+            end_year: this.resume.education.endYear,
+            secondEducation: this.resume.education.secondEducation,
           },
         };
         console.log(data);
-        let result = await Api.post('/api/cv/add', data);
-        if (result) alert('Резюме добавлено');
-        else alert('Произошла ошибка');
+        if (!this.resumeEdit) {
+          let result = await Api.post('/api/cv/add', data);
+          if (result) alert('Резюме добавлено');
+          else alert('Произошла ошибка');
+        } else {
+          let result = await Api.post(`/api/cv/${this.id}/edit`, data);
+          if (result) alert('Резюме изменено');
+          else alert('Произошла ошибка');
+        }
+      } else alert('В резюме ошибка!');
+      //this.$router.push({name: 'main'});
+    },
+    async loadResume(id) {
+      this.loading = true;
+      let res = await Api.get(`/api/cv/${id}`);
+      let result = res.result;
+      if (result) {
+        this.resume.prof = result.Profession;
+        this.resume.status = result.Status;
+        this.resume.city = result.City;
+        this.resume.photo = result.Photo;
+        this.resume.fio = result.FIO;
+        this.resume.phone = result.Phone;
+        this.resume.email = result.Email;
+        this.resume.birthday = result.BirthDate;
+        let array = [];
+        res.education.forEach((element) => {
+          array.push(element);
+        })
+        this.resume.education = array[0];
+        array.shift();
+        this.resume.education.secondEducation = array;
+        this.resume.salary = result.Salary;
+        this.resume.key_skills = JSON.parse(result.KeySkills);
+        this.resume.description = result.About;
       }
-      else alert('В резюме ошибка!');
+      else {
+        alert(`Произошла неизвестная ошибка`);
+        //this.$router.push({name: 'main'});
+      }
+      this.loading = false;
     }
   },
 }

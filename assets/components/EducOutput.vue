@@ -26,7 +26,6 @@
     </div>
     <div v-if="ed.educationType != 'Среднее'" class="row row-cols-2 form-control"
          v-bind:key="ed.id" style="display: flex">
-      <resume-out value-name="Город" :value="ed.city"/>
       <resume-out value-name="Учебное заведение" :value="ed.university"/>
       <resume-out value-name="Факультет" :value="ed.faculty"/>
       <resume-out value-name="Специализация" :value="ed.specialization"/>
@@ -36,7 +35,7 @@
 </template>
 
 <script>
-import ResumeOut from "./ResumeOut";
+import ResumeOut from "./ResumeOutput";
 
 export default {
   name: "EducOut",

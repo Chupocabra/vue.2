@@ -44,6 +44,9 @@ export default {
       nextKeySkillId: 2,
     }
   },
+  created() {
+    this.keySkills = this.modelValue;
+  },
   methods: {
     addNewKeySkill() {
       if (this.newKeySkillText!=''){

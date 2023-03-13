@@ -45,13 +45,16 @@ class MainController extends AbstractController
     #[Route('/api/cv/{id}', name: 'get_resume', methods: 'GET')]
     public function getResume(int $id, ResumeRepository $resumeRepository, EducationRepository $educationRepository) : JsonResponse
     {
-        return new JsonResponse(
-            $this->serializer->serialize(
-                $resumeRepository->findOneBy(['id' => $id]),
-                'json'
-            ),
-            json: true
-        );
+        $resume = $resumeRepository->find($id);
+        $educations = $educationRepository->findBy(['resume' => $resume->getId()]);
+//        return new JsonResponse(
+//            $this->serializer->serialize($resume, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['resume']]),
+//            json : true
+//        );
+        return new JsonResponse([
+            'education' => $this->serializer->normalize($educations, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['resume']]),
+            'result' => $this->serializer->normalize($resume, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['education']]),
+        ]);
     }
 
     #[Route('/api/cv/add', name: 'add_resume', methods: 'POST')]
@@ -61,9 +64,19 @@ class MainController extends AbstractController
         $resume = new Resume();
         $resume = $resumeRepository->CreateResume($resume, $resumeData);
         $resumeRepository->save($resume, true);
+
         $education = new Education();
         $education = $educationRepository->CreateEducation($education, $resumeData['education'], $resume);
         $educationRepository->save($education, true);
+
+        foreach ($resumeData['education']['secondEducation'] as $parameter) {
+            if ($parameter != null) {
+
+            }
+            $education = new Education();
+            $education = $educationRepository->CreateEducation($education, $parameter, $resume);
+            $educationRepository->save($education, true);
+        }
 
         return new JsonResponse([
             'resumeId' => $resume->getId(),
@@ -72,9 +85,31 @@ class MainController extends AbstractController
     }
 
     #[Route('/api/cv/{id}/edit', name: 'edit_resume', methods: 'POST')]
-    public function editResume() : JsonResponse
+    public function editResume(int $id, Request $request, ResumeRepository $resumeRepository, EducationRepository $educationRepository) : JsonResponse
     {
-        return JsonResponse::fromJsonString('post');
+        $parameters = json_decode($request->getContent(), true);
+        $resume = $resumeRepository->find($id);
+        $resume = $resumeRepository->CreateResume($resume, $parameters);
+        $resumeRepository->save($resume, true);
+
+        $educations = $educationRepository->findBy(['resume' => $resume->getId()]);
+
+        foreach ($educations as $education) {
+            $educationRepository->remove($education, true);
+        }
+
+        $education = new Education();
+        $education = $educationRepository->CreateEducation($education, $parameters['education'], $resume);
+        $educationRepository->save($education, true);
+        $resume->addEducation($education);
+
+        foreach ($parameters['education']['secondEducation'] as $parameter) {
+            $education = new Education();
+            $education = $educationRepository->CreateEducation($education, $parameter, $resume);
+            $educationRepository->save($education, true);
+        }
+
+        return new JsonResponse(['result' => $resume->getId()]);
     }
 
     #[Route('/api/cv/{id}/status/update', name: 'status_update', methods: 'POST')]
