@@ -160,6 +160,7 @@ export default {
       else if (this.validPhone(this.resume.phone)) {
         return this.resume.phone;
       } else {
+        this.errors.phoneError = true;
         return "Телефон может состоять только из цифр и иметь длину от 6 до 10 символов.";
       }
     },
@@ -168,6 +169,7 @@ export default {
       else if (this.validEmail(this.resume.email)) {
         return this.resume.email;
       } else {
+        this.errors.emailError = true;
         return "Формат почты неверный";
       }
     },
@@ -175,9 +177,13 @@ export default {
       if (this.resume.birthday === '') return '';
       let db = this.resume.birthday.split('-');
       if (!this.resume.birthday || (this.resume.age > 120) || (this.resume.age < 0)) {
+        this.errors.birthdayError = true;
         return "Какая?";
-      } else {
+      } else if(db[2]!== undefined) {
         return db[2] + '.' + db[1] + '.' + db[0];
+      } else {
+        this.errors.birthdayError = true;
+        return "Какая?";
       }
     },
     age: function () {
@@ -218,15 +224,6 @@ export default {
     }
   },
   watch: {
-    phone() {
-      this.errors.phoneError = !this.validPhone(this.phone);
-    },
-    email() {
-      this.errors.emailError = !this.validEmail(this.email);
-    },
-    birthday() {
-      this.errors.birthdayError = this.age === '?';
-    },
     education() {
       if (this.education === "Среднее") {
         this.showMore = 'none';
@@ -287,7 +284,7 @@ export default {
             university: this.resume.education.university,
             faculty: this.resume.education.faculty,
             specialization: this.resume.education.specialization,
-            end_year: this.resume.education.endYear,
+            endYear: this.resume.education.endYear,
             secondEducation: this.resume.education.secondEducation,
           },
         };
@@ -302,7 +299,7 @@ export default {
           else alert('Произошла ошибка');
         }
       } else alert('В резюме ошибка!');
-      //this.$router.push({name: 'main'});
+      this.$router.push({name: 'main'});
     },
     async loadResume(id) {
       this.loading = true;
@@ -332,7 +329,7 @@ export default {
       }
       else {
         alert(`Произошла неизвестная ошибка`);
-        //this.$router.push({name: 'main'});
+        this.$router.push({name: 'main'});
       }
       this.loading = false;
     }

@@ -48,7 +48,7 @@ class EducationRepository extends ServiceEntityRepository
             $education->setUniversity($educationFields['university'])
                 ->setFaculty($educationFields['faculty'])
                 ->setSpecialization($educationFields['specialization'])
-                ->setEndYear($educationFields['end_year']);
+                ->setEndYear($educationFields['endYear']);
         }
         $education->setResume($resume);
         return $education;

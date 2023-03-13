@@ -14,19 +14,19 @@ class Education
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $Type = null;
+    private ?string $type = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $University = null;
+    private ?string $university = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $Faculty = null;
+    private ?string $faculty = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $Specialization = null;
+    private ?string $specialization = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $EndYear = null;
+    private ?string $endYear = null;
 
     #[ORM\ManyToOne(inversedBy: 'education')]
     #[ORM\JoinColumn(nullable: false)]
@@ -39,60 +39,60 @@ class Education
 
     public function getType(): ?string
     {
-        return $this->Type;
+        return $this->type;
     }
 
-    public function setType(string $Type): self
+    public function setType(string $type): self
     {
-        $this->Type = $Type;
+        $this->type = $type;
 
         return $this;
     }
 
     public function getUniversity(): ?string
     {
-        return $this->University;
+        return $this->university;
     }
 
-    public function setUniversity(?string $University): self
+    public function setUniversity(?string $university): self
     {
-        $this->University = $University;
+        $this->university = $university;
 
         return $this;
     }
 
     public function getFaculty(): ?string
     {
-        return $this->Faculty;
+        return $this->faculty;
     }
 
-    public function setFaculty(?string $Faculty): self
+    public function setFaculty(?string $faculty): self
     {
-        $this->Faculty = $Faculty;
+        $this->faculty = $faculty;
 
         return $this;
     }
 
     public function getSpecialization(): ?string
     {
-        return $this->Specialization;
+        return $this->specialization;
     }
 
-    public function setSpecialization(?string $Specialization): self
+    public function setSpecialization(?string $specialization): self
     {
-        $this->Specialization = $Specialization;
+        $this->specialization = $specialization;
 
         return $this;
     }
 
     public function getEndYear(): ?string
     {
-        return $this->EndYear;
+        return $this->endYear;
     }
 
-    public function setEndYear(?string $EndYear): self
+    public function setEndYear(?string $endYear): self
     {
-        $this->EndYear = $EndYear;
+        $this->endYear = $endYear;
 
         return $this;
     }

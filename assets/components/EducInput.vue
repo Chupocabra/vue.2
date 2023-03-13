@@ -21,7 +21,7 @@
   </div>
 
   <div v-for="(secondEd, index) in education.secondEducation" v-bind:key="secondEd">
-    <select-val v-if="haveSecondEd" v-model="secondEd.Type" value-name="Образование" :options="educationOpt"/>
+    <select-val v-if="haveSecondEd" v-model="secondEd.type" value-name="Образование" :options="educationOpt"/>
     <div v-if="haveSecondEd" class="form-group">
       <div v-if="secondEd.educationType != 'Среднее'">
         <div style="display: flex; justify-content: space-between">
@@ -165,23 +165,18 @@ export default {
     }
   },
   created() {
-    if(this?.educationFromDb?.Type){
+    if(this?.educationFromDb?.type){
       this.haveSecondEd = true;
-      this.educationType = this.educationFromDb.Type;
-      this.education.type = this.educationFromDb.Type;
-      this.education.faculty = this.educationFromDb.Faculty;
-      this.education.university = this.educationFromDb.University;
-      this.education.specialization = this.educationFromDb.Specialization;
-      this.education.endYear = this.educationFromDb.EndYear;
+      this.educationType = this.educationFromDb.type;
+      this.education.type = this.educationFromDb.type;
+      this.education.faculty = this.educationFromDb.faculty;
+      this.education.university = this.educationFromDb.university;
+      this.education.specialization = this.educationFromDb.specialization;
+      this.education.endYear = this.educationFromDb.endYear;
       let array = [];
       this.educationFromDb.secondEducation.forEach((element) => {
         this.education.secondEducation = array.push(element);
       })
-      let result = array.map(lower);
-      function lower(value) {
-        return value[0].toLowerCase() + value.substr(1);
-      }
-      console.log(result);
       this.education.secondEducation = array;
       console.log(this.education.secondEducation);
     }

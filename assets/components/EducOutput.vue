@@ -21,7 +21,7 @@
         <div>Дополнительное образование</div>
       </div>
       <div class="fs-5 col text-break">
-        <div>{{ ed.educationType }}</div>
+        <div>{{ ed.type }}</div>
       </div>
     </div>
     <div v-if="ed.educationType != 'Среднее'" class="row row-cols-2 form-control"
