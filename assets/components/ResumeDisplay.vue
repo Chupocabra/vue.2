@@ -158,6 +158,7 @@ export default {
     r_phone: function () {
       if (this.resume.phone === '') return '';
       else if (this.validPhone(this.resume.phone)) {
+        this.errors.phoneError = false;
         return this.resume.phone;
       } else {
         this.errors.phoneError = true;
@@ -167,6 +168,7 @@ export default {
     r_email: function () {
       if (this.resume.email === '') return '';
       else if (this.validEmail(this.resume.email)) {
+        this.errors.emailError = false;
         return this.resume.email;
       } else {
         this.errors.emailError = true;
@@ -180,6 +182,7 @@ export default {
         this.errors.birthdayError = true;
         return "Какая?";
       } else if(db[2]!== undefined) {
+        this.errors.birthdayError = false;
         return db[2] + '.' + db[1] + '.' + db[0];
       } else {
         this.errors.birthdayError = true;
@@ -266,6 +269,7 @@ export default {
       } else return age + " лет";
     },
     async save() {
+      this.errors.emailError = false; this.errors.birthdayError = false; this.errors.phoneError = false;
       if (!(this.errors.emailError || this.errors.birthdayError || this.errors.phoneError)) {
         let data = {
           status: this.resume.status,
@@ -299,7 +303,7 @@ export default {
           else alert('Произошла ошибка');
         }
       } else alert('В резюме ошибка!');
-      this.$router.push({name: 'main'});
+      this.$router.push({name: 'ResumeList'});
     },
     async loadResume(id) {
       this.loading = true;
@@ -328,8 +332,8 @@ export default {
         this.resume.description = result.About;
       }
       else {
-        alert(`Произошла неизвестная ошибка`);
-        this.$router.push({name: 'main'});
+        alert('Произошла ошибка ' + res.error);
+        this.$router.push({name: 'ResumeList'});
       }
       this.loading = false;
     }

@@ -1,183 +1,178 @@
 <template>
   <div class="container" v-if="!loading">
     <div class="row">
-      <div class="col">
-        <h3>Новый ({{ newResume.length }})</h3>
+      <div class="col-lg-3 col-6 mt-3">
+        <h3>Новый ({{ newStatus.length }}):</h3>
       </div>
-      <div class="col">
-        <h3>Назначено собеседование ({{ waitResume.length }})</h3>
+      <div class="col-lg-3 col-6 mt-3">
+        <h3>Назначено собеседование ({{ interviewStatus.length }}):</h3>
       </div>
-      <div class="col">
-        <h3>Принят ({{ acceptedResume.length }})</h3>
+      <div class="col-lg-3 col-6 mt-3">
+        <h3>Принят ({{ acceptedStatus.length }}):</h3>
       </div>
-      <div class="col">
-        <h3>Отказ ({{ refusedResume.length }})</h3>
+      <div class="col-lg-3 col-6 mt-3">
+        <h3>Отказ ({{ refusedStatus.length }}):</h3>
       </div>
     </div>
-    <div class="row">
+    <div class="row" v-if="resumeList">
       <div class="col-lg-3 col-6 mt-3">
         <draggable
             class="list-group"
             tag="ul"
-            v-model="newResume"
+            v-model="newStatus"
             v-bind="dragOptions"
-            group="people"
             :move="onMove"
             @start="isDragging = true"
             @end="isDragging = false">
-          <li class="list-group-item" v-for="item in newResume" :key="item.id">
-            <resume-card
-                :fio="item.FIO"
-                :profession="item.Profession"
-                :bday="item.BirthDate"
-                :photo="item.Photo"
-                @click="clickCard(item)"
-            ></resume-card>
-          </li>
+          <transition-group type="transition" name="flip-list">
+            <li class="list-group-item" v-for="item in newStatus" :key="item.id">
+              <resume-card
+                  :fio="item.FIO"
+                  :profession="item.Profession"
+                  :bday="item.BirthDate"
+                  :photo="item.Photo"
+                  @click="clickCard(item)"
+              ></resume-card>
+            </li>
+          </transition-group>
         </draggable>
       </div>
       <div class="col-lg-3 col-6 mt-3">
         <draggable
             class="list-group"
             tag="ul"
-            v-model="waitResume"
+            v-model="interviewStatus"
             v-bind="dragOptions"
-            group="people"
             :move="onMove"
             @start="isDragging = true"
             @end="isDragging = false">
-          <li class="list-group-item" v-for="item in waitResume" :key="item.id">
-            <resume-card
-                :fio="item.FIO"
-                :profession="item.Profession"
-                :bday="item.BirthDate"
-                :photo="item.Photo"
-                @click="clickCard(item)"
-            ></resume-card>
-          </li>
+          <transition-group type="transition" name="flip-list">
+            <li class="list-group-item" v-for="item in interviewStatus" :key="item.id">
+              <resume-card
+                  :fio="item.FIO"
+                  :profession="item.Profession"
+                  :bday="item.BirthDate"
+                  :photo="item.Photo"
+                  @click="clickCard(item)"
+              ></resume-card>
+            </li>
+          </transition-group>
         </draggable>
       </div>
       <div class="col-lg-3 col-6 mt-3">
         <draggable
             class="list-group"
             tag="ul"
-            v-model="acceptedResume"
+            v-model="acceptedStatus"
             v-bind="dragOptions"
-            group="people"
             :move="onMove"
             @start="isDragging = true"
             @end="isDragging = false">
-          <li class="list-group-item" v-for="item in acceptedResume" :key="item.id">
-            <resume-card
-                :fio="item.FIO"
-                :profession="item.Profession"
-                :bday="item.BirthDate"
-                :photo="item.Photo"
-                @click="clickCard(item)"
-            ></resume-card>
-          </li>
+          <transition-group type="transition" name="flip-list">
+            <li class="list-group-item" v-for="item in acceptedStatus" :key="item.id">
+              <resume-card
+                  :fio="item.FIO"
+                  :profession="item.Profession"
+                  :bday="item.BirthDate"
+                  :photo="item.Photo"
+                  @click="clickCard(item)"
+              ></resume-card>
+            </li>
+          </transition-group>
         </draggable>
       </div>
       <div class="col-lg-3 col-6 mt-3">
         <draggable
             class="list-group"
             tag="ul"
-            v-model="refusedResume"
+            v-model="refusedStatus"
             v-bind="dragOptions"
-            group="people"
             :move="onMove"
             @start="isDragging = true"
             @end="isDragging = false">
-          <li class="list-group-item" v-for="item in refusedResume" :key="item.id">
-            <resume-card
-                :fio="item.FIO"
-                :profession="item.Profession"
-                :bday="item.BirthDate"
-                :photo="item.Photo"
-                @click="clickCard(item)"
-            ></resume-card>
-          </li>
+          <transition-group type="transition" name="flip-list">
+            <li class="list-group-item" v-for="item in refusedStatus" :key="item.id">
+              <resume-card
+                  :fio="item.FIO"
+                  :profession="item.Profession"
+                  :bday="item.BirthDate"
+                  :photo="item.Photo"
+                  @click="clickCard(item)"
+              ></resume-card>
+            </li>
+          </transition-group>
         </draggable>
       </div>
     </div>
   </div>
   <div class="container" v-else>
-    <div>Загрузка..</div>
+      Загрузка....
   </div>
 </template>
 
 <script>
 import ResumeCard from "./ResumeCard";
-import {VueDraggableNext} from 'vue-draggable-next';
+import { VueDraggableNext } from 'vue-draggable-next';
 import {Api} from "../api/Api";
-//import axios from "axios";
 
 export default {
-  name: "ResumeList",
-  components: {ResumeCard, draggable: VueDraggableNext},
+  name: 'ResumeList',
+  components: { ResumeCard, draggable: VueDraggableNext },
   data: () => ({
-    loading: true,
-    newResume: [],
-    waitResume: [],
-    acceptedResume: [],
-    refusedResume: [],
-
     editable: true,
     isDragging: false,
     delayedDragging: false,
+    loading: true,
+    resumeCards: [],
   }),
+  async created() {
+    await this.updateLists();
+  },
   methods: {
-    clickCard(item) {
-      this.$router.push({name: 'edit', params: {id: item.id}});
+    async onMove({ relatedContext, draggedContext }) {
+      const relatedElement = relatedContext.element;
+      const draggedElement = draggedContext.element;
+      console.log(relatedElement);
+      await Api.post(`/api/cv/${draggedElement.id}/status/update`, {Status: relatedElement.Status});
+      await this.updateLists();
+      return (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed;
     },
-    async onMove({relatedContext, draggedContext}) {
-      if (relatedContext?.element) {
-        const relatedElement = relatedContext.element;
-        const draggedElement = draggedContext.element;
-        await Api.post(`/api/cv/${draggedElement.id}/status/update`, {status: relatedElement.Status});
-
-        await this.showResumes();
-
-        return (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed;
-      }
-    },
-    async showResumes() {
+    async updateLists() {
       this.loading = true;
-      this.newResume = [];
-      this.waitResume = [];
-      this.acceptedResume = [];
-      this.refusedResume = [];
       let response = await Api.get('/api/cv');
       if (!response) alert('Ошибка');
-      response.forEach((item) => {
-        if (item.Status == 'Новый') {
-          this.newResume.push(item);
-        }
-        if (item.Status == 'Назначено собеседование') {
-          this.waitResume.push(item);
-        }
-        if (item.Status == 'Принят') {
-          this.acceptedResume.push(item);
-        }
-        if (item.Status == 'Отказ') {
-          this.refusedResume.push(item);
-        }
-      });
+      this.resumeCards = response;
       this.loading = false;
-    }
+    },
+    clickCard(item) {
+      item.fixed = !item.fixed;
+      this.$router.push({ name: 'edit', params: { id: item.id } });
+    },
   },
   computed: {
+    resumeList() {
+      return this.resumeCards;
+    },
+    newStatus() {
+      return this.resumeCards?.filter(item => item.Status === 'Новый');
+    },
+    interviewStatus() {
+      return this.resumeCards?.filter(item => item.Status === 'Назначено собеседование');
+    },
+    acceptedStatus() {
+      return this.resumeCards?.filter(item => item.Status === 'Принят');
+    },
+    refusedStatus() {
+      return this.resumeCards?.filter(item => item.Status === 'Отказ');
+    },
     dragOptions() {
       return {
         animation: 0,
         group: 'description',
         disabled: !this.editable,
         ghostClass: 'ghost',
-      }
-    }
-  },
-  created() {
-    this.showResumes();
+      };
+    },
   },
   watch: {
     isDragging(newValue) {
@@ -190,9 +185,27 @@ export default {
       });
     },
   },
-}
+};
 </script>
 
 <style scoped>
-
+.flip-list-move {
+  transition: transform 0.5s;
+}
+.no-move {
+  transition: transform 0s;
+}
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
+}
+.list-group {
+  min-height: 20px;
+}
+.list-group-item {
+  cursor: move;
+}
+.list-group-item i {
+  cursor: pointer;
+}
 </style>

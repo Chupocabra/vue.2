@@ -46,6 +46,7 @@ class MainController extends AbstractController
     public function getResume(int $id, ResumeRepository $resumeRepository, EducationRepository $educationRepository) : JsonResponse
     {
         $resume = $resumeRepository->find($id);
+        if(is_null($resume)) return new JsonResponse(['error' => 'Резюме не найдено']);
         $educations = $educationRepository->findBy(['resume' => $resume->getId()]);
 //        return new JsonResponse(
 //            $this->serializer->serialize($resume, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['resume']]),
@@ -89,6 +90,7 @@ class MainController extends AbstractController
     {
         $parameters = json_decode($request->getContent(), true);
         $resume = $resumeRepository->find($id);
+        if(is_null($resume)) return new JsonResponse(['error' => 'Резюме не найдено']);
         $resume = $resumeRepository->CreateResume($resume, $parameters);
         $resumeRepository->save($resume, true);
 
@@ -117,7 +119,7 @@ class MainController extends AbstractController
     {
         $parameters = json_decode($request->getContent(), true);
         $resume = $resumeRepository->find($id);
-        $resume->setStatus($parameters['status']);
+        $resume->setStatus($parameters['Status']);
         $resumeRepository->save($resume, true);
         return new JsonResponse([
             'result' => $resume->getId(),
