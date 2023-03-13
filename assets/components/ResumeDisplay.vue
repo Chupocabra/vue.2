@@ -321,9 +321,11 @@ export default {
         res.education.forEach((element) => {
           array.push(element);
         })
-        this.resume.education = array[0];
-        array.shift();
-        this.resume.education.secondEducation = array;
+        if(array.length != 0){
+          this.resume.education = array[0];
+          array.shift();
+          this.resume.education.secondEducation = array;
+        }
         this.resume.salary = result.Salary;
         this.resume.key_skills = JSON.parse(result.KeySkills);
         this.resume.description = result.About;

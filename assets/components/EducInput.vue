@@ -156,7 +156,7 @@ export default {
         university: '',
         faculty: '',
         specialization: '',
-        end_year: '',
+        endYear: '',
       });
       this.$emit('update:modelValue', this.education);
     },
@@ -165,7 +165,7 @@ export default {
     }
   },
   created() {
-    if(this.educationFromDb.Type!== undefined){
+    if(this?.educationFromDb?.Type){
       this.haveSecondEd = true;
       this.educationType = this.educationFromDb.Type;
       this.education.type = this.educationFromDb.Type;
@@ -173,14 +173,15 @@ export default {
       this.education.university = this.educationFromDb.University;
       this.education.specialization = this.educationFromDb.Specialization;
       this.education.endYear = this.educationFromDb.EndYear;
-      let array =[];
-      for(let i = 0; i < this.educationFromDb.secondEducation.length; ++i){
-        this.education.secondEducation.type = this.educationFromDb.secondEducation[i].Type;
+      let array = [];
+      this.educationFromDb.secondEducation.forEach((element) => {
+        this.education.secondEducation = array.push(element);
+      })
+      let result = array.map(lower);
+      function lower(value) {
+        return value[0].toLowerCase() + value.substr(1);
       }
-      // this.educationFromDb.secondEducation.forEach((element) => {
-      //   this.education.secondEducation = array.push(element);
-      // })
-      console.log(array);
+      console.log(result);
       this.education.secondEducation = array;
       console.log(this.education.secondEducation);
     }

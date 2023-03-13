@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Education;
 use App\Entity\Resume;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
