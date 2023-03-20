@@ -1,3 +1,4 @@
+<!-- Header с кнопками главная страница и добавить резюме -->
 <template>
   <div class="container myHeader">
     <ul class="d-flex align-items-center flex-wrap nav justify-content-between">

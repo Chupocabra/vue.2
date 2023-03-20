@@ -1,3 +1,5 @@
+<!-- Ключевые навыки, хранятся в массиве, связаны с resume.key_skills-->
+
 <template>
   <div class="form-group">
     <div id="todo-list-example" class="demo">

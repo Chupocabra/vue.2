@@ -24,13 +24,13 @@ class MainController extends AbstractController
     {
         $this->serializer = $serializer;
     }
-
+    // Отображение базовой страницы
     #[Route('/', name: 'app_main')]
     public function index(): Response
     {
         return $this->render('base.html.twig');
     }
-
+    // Получение списка резюме
     #[Route('/api/cv', name: 'get_resume_list', methods: 'GET')]
     public function getResumeList(ResumeRepository $resumeRepository): JsonResponse
     {
@@ -41,23 +41,20 @@ class MainController extends AbstractController
             json: true
         );
     }
-
+    // Получение резюме
+    // на вход id искомого резюме
     #[Route('/api/cv/{id}', name: 'get_resume', methods: 'GET')]
     public function getResume(int $id, ResumeRepository $resumeRepository, EducationRepository $educationRepository) : JsonResponse
     {
         $resume = $resumeRepository->find($id);
         if(is_null($resume)) return new JsonResponse(['error' => 'Резюме не найдено']);
         $educations = $educationRepository->findBy(['resume' => $resume->getId()]);
-//        return new JsonResponse(
-//            $this->serializer->serialize($resume, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['resume']]),
-//            json : true
-//        );
         return new JsonResponse([
             'education' => $this->serializer->normalize($educations, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['resume']]),
             'result' => $this->serializer->normalize($resume, 'json', [AbstractNormalizer::IGNORED_ATTRIBUTES => ['education']]),
         ]);
     }
-
+    // Добавление новой записи
     #[Route('/api/cv/add', name: 'add_resume', methods: 'POST')]
     public function addResume(Request $request, ResumeRepository $resumeRepository, EducationRepository $educationRepository) : JsonResponse
     {
@@ -71,9 +68,6 @@ class MainController extends AbstractController
         $educationRepository->save($education, true);
 
         foreach ($resumeData['education']['secondEducation'] as $parameter) {
-            if ($parameter != null) {
-
-            }
             $education = new Education();
             $education = $educationRepository->CreateEducation($education, $parameter, $resume);
             $educationRepository->save($education, true);
@@ -84,7 +78,8 @@ class MainController extends AbstractController
             'resumeStatus' => $resume->getStatus(),
         ]);
     }
-
+    // Редактирование записи
+    // на вход id редактируемой записи
     #[Route('/api/cv/{id}/edit', name: 'edit_resume', methods: 'POST')]
     public function editResume(int $id, Request $request, ResumeRepository $resumeRepository, EducationRepository $educationRepository) : JsonResponse
     {
@@ -113,7 +108,8 @@ class MainController extends AbstractController
 
         return new JsonResponse(['result' => $resume->getId()]);
     }
-
+    // Обновление статуса резюме
+    // на вход id обновляемого резюме
     #[Route('/api/cv/{id}/status/update', name: 'status_update', methods: 'POST')]
     public function changeResumeStatus(int $id, Request $request, ResumeRepository $resumeRepository) : JsonResponse
     {

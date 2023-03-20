@@ -1,3 +1,7 @@
+<!-- Компонент для указания образований -->
+<!-- Связан с resume.education -->
+<!-- Использует city для поиска образовательных учреждений -->
+<!-- Образования после первого хранятся в массиве -->
 <template>
   <select-val v-model="educationType" value-name="Образование" :options="educationOpt"/>
   <div class="form-group">
@@ -23,7 +27,7 @@
   <div v-for="(secondEd, index) in education.secondEducation" v-bind:key="secondEd">
     <select-val v-if="haveSecondEd" v-model="secondEd.type" value-name="Образование" :options="educationOpt"/>
     <div v-if="haveSecondEd" class="form-group">
-      <div v-if="secondEd.educationType != 'Среднее'">
+      <div v-if="secondEd.type != 'Среднее'">
         <div style="display: flex; justify-content: space-between">
           <p>Расскажите подробнее</p>
           <p v-if="haveSecondEd" class="d-md-flex justify-content-md-end">

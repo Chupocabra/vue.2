@@ -1,3 +1,4 @@
+<!-- Карточка, показывающая минимальную информацию о резюме -->
 <template>
 <div class="card">
   <img :src="photo" class="card-img-top"/>

@@ -1,3 +1,4 @@
+<!-- Выпадающий список, используется для образования и зарплаты -->
 <template>
   <div class="form-group">
     <label for="sel">{{ valueName }}</label>

@@ -1,17 +1,19 @@
+<!-- Отображает все резюме из БД (минимальную информацию о резюме -->
+<!-- Резюме поделены по колонкам в соответствии с их статусами -->
 <template>
   <div class="container" v-if="!loading">
     <div class="row">
       <div class="col-lg-3 col-6 mt-3">
-        <h3>Новый ({{ newStatus.length }}):</h3>
+        <h3 class="text-primary">Новый ({{ newStatus.length}}):</h3>
       </div>
       <div class="col-lg-3 col-6 mt-3">
-        <h3>Назначено собеседование ({{ interviewStatus.length }}):</h3>
+        <h3 class="text-info">Назначено собеседование ({{ interviewStatus.length }}):</h3>
       </div>
       <div class="col-lg-3 col-6 mt-3">
-        <h3>Принят ({{ acceptedStatus.length }}):</h3>
+        <h3 class="text-success">Принят ({{ acceptedStatus.length }}):</h3>
       </div>
       <div class="col-lg-3 col-6 mt-3">
-        <h3>Отказ ({{ refusedStatus.length }}):</h3>
+        <h3 class="text-danger">Отказ ({{ refusedStatus.length }}):</h3>
       </div>
     </div>
     <div class="row" v-if="resumeList">
@@ -25,15 +27,16 @@
             @start="isDragging = true"
             @end="isDragging = false">
           <transition-group type="transition" name="flip-list">
-            <li class="list-group-item" v-for="item in newStatus" :key="item.id">
-              <resume-card
-                  :fio="item.FIO"
-                  :profession="item.Profession"
-                  :bday="item.BirthDate"
-                  :photo="item.Photo"
-                  @click="clickCard(item)"
-              ></resume-card>
-            </li>
+            <template v-if="Array.isArray(newStatus)">
+              <li class="list-group-item" v-for="item in newStatus" :key="item.id">
+                <resume-card
+                    :fio="item.FIO"
+                    :profession="item.Profession"
+                    :bday="item.BirthDate"
+                    :photo="item.Photo"
+                    @click="clickCard(item)"/>
+              </li>
+            </template>
           </transition-group>
         </draggable>
       </div>
@@ -47,6 +50,7 @@
             @start="isDragging = true"
             @end="isDragging = false">
           <transition-group type="transition" name="flip-list">
+            <template v-if="Array.isArray(interviewStatus)">
             <li class="list-group-item" v-for="item in interviewStatus" :key="item.id">
               <resume-card
                   :fio="item.FIO"
@@ -56,6 +60,7 @@
                   @click="clickCard(item)"
               ></resume-card>
             </li>
+            </template>
           </transition-group>
         </draggable>
       </div>
@@ -69,6 +74,7 @@
             @start="isDragging = true"
             @end="isDragging = false">
           <transition-group type="transition" name="flip-list">
+            <template v-if="Array.isArray(acceptedStatus)">
             <li class="list-group-item" v-for="item in acceptedStatus" :key="item.id">
               <resume-card
                   :fio="item.FIO"
@@ -78,6 +84,7 @@
                   @click="clickCard(item)"
               ></resume-card>
             </li>
+            </template>
           </transition-group>
         </draggable>
       </div>
@@ -91,6 +98,7 @@
             @start="isDragging = true"
             @end="isDragging = false">
           <transition-group type="transition" name="flip-list">
+            <template v-if="Array.isArray(refusedStatus)">
             <li class="list-group-item" v-for="item in refusedStatus" :key="item.id">
               <resume-card
                   :fio="item.FIO"
@@ -100,6 +108,7 @@
                   @click="clickCard(item)"
               ></resume-card>
             </li>
+            </template>
           </transition-group>
         </draggable>
       </div>
@@ -130,12 +139,18 @@ export default {
   },
   methods: {
     async onMove({ relatedContext, draggedContext }) {
-      const relatedElement = relatedContext.element;
-      const draggedElement = draggedContext.element;
-      console.log(relatedElement);
-      await Api.post(`/api/cv/${draggedElement.id}/status/update`, {Status: relatedElement.Status});
-      await this.updateLists();
-      return (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed;
+      if (relatedContext?.element) {
+        const relatedElement = relatedContext.element;
+        const draggedElement = draggedContext.element;
+        await Api.post(`/api/cv/${draggedElement.id}/status/update`, {Status: relatedElement.Status});
+        await this.updateLists();
+        return (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed;
+      } else {
+        const draggedElement = draggedContext.element;
+        await Api.post(`/api/cv/${draggedElement.id}/status/update`, {Status: relatedContext.list.element.Status});
+        await this.updateLists();
+        return !draggedElement.fixed;
+      }
     },
     async updateLists() {
       this.loading = true;
@@ -154,16 +169,24 @@ export default {
       return this.resumeCards;
     },
     newStatus() {
-      return this.resumeCards?.filter(item => item.Status === 'Новый');
+      let list = this.resumeCards?.filter(item => item.Status === 'Новый');
+      if (list.length) return list;
+      else return {element: {Status: 'Новый'}};
     },
     interviewStatus() {
-      return this.resumeCards?.filter(item => item.Status === 'Назначено собеседование');
+      let list = this.resumeCards?.filter(item => item.Status === 'Назначено собеседование');
+      if (list.length) return list;
+      else return {element: {Status: 'Назначено собеседование'}};
     },
     acceptedStatus() {
-      return this.resumeCards?.filter(item => item.Status === 'Принят');
+      let list = this.resumeCards?.filter(item => item.Status === 'Принят');
+      if (list.length) return list;
+      else return {element: {Status: 'Принят'}};
     },
     refusedStatus() {
-      return this.resumeCards?.filter(item => item.Status === 'Отказ');
+      let list = this.resumeCards?.filter(item => item.Status === 'Отказ');
+      if (list.length) return list;
+      else return {element: {Status: 'Отказ'}};
     },
     dragOptions() {
       return {

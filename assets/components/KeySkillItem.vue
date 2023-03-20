@@ -1,3 +1,4 @@
+<!-- Один ключевой навык и его кнопка -->
 <template>
   <li class="text-break mt-2">
     {{ title }}

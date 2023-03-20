@@ -1,3 +1,4 @@
+<!-- Компонент для отображения фото, имени и города -->
 <template>
   <div class="row ms-1 mt-1">
     <div class="col">

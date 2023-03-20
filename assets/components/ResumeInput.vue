@@ -1,3 +1,4 @@
+<!-- Input для текстовых данных резюме -->
 <template>
   <div class="form-group">
     <label for="inp">{{ valueName }}</label>

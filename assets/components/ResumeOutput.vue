@@ -1,3 +1,4 @@
+<!-- Output для текстовых данных резюме -->
 <template>
   <div class="fs-5 col"
        v-bind:class="{'bg-light': light, 'text-danger': error}">

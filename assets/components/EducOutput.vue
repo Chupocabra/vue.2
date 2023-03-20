@@ -24,7 +24,7 @@
         <div>{{ ed.type }}</div>
       </div>
     </div>
-    <div v-if="ed.educationType != 'Среднее'" class="row row-cols-2 form-control"
+    <div v-if="ed.type != 'Среднее'" class="row row-cols-2 form-control"
          v-bind:key="ed.id" style="display: flex">
       <resume-out value-name="Учебное заведение" :value="ed.university"/>
       <resume-out value-name="Факультет" :value="ed.faculty"/>

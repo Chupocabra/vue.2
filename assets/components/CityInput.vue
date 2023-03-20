@@ -1,3 +1,5 @@
+<!-- Компонент для ввода города, взаимодействует с апи ВК -->
+<!-- Связан с resume.city -->
 <template>
   <div class="form-group">
     <label for="city">Город</label>
