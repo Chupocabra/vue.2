@@ -1,4 +1,5 @@
-# vue.2 lw6 setup
+#lw4-6
+
 # Project frontend setup
 npm install
 # Compiles and hot-reloads for development
