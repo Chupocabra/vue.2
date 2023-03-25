@@ -1,12 +1,12 @@
-#lw4-6
+# lw4-6
 
-# Project frontend setup
+# Frontend setup
 npm install
 # Compiles and hot-reloads for development
 npm run serve
 # Compiles and minifies for production
 npm run build
-# Project backend setup
+# Backend setup
 composer install
 # Start 
 symfony serve
