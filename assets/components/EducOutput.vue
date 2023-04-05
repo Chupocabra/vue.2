@@ -1,3 +1,4 @@
+<!-- Компонент для вывода ообразований -->
 <template>
   <div class="row row-cols-2  ms-1">
     <div class="fs-5 col">
@@ -44,6 +45,7 @@ export default {
     ResumeOut,
   },
   computed: {
+    // дополнительные поля образования
     showMoreResume: function () {
       if (this.education.type === 'Среднее') {
         return 'none';

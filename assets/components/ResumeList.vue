@@ -138,6 +138,7 @@ export default {
     await this.updateLists();
   },
   methods: {
+    // изменение статуса при перемещении
     async onMove({ relatedContext, draggedContext }) {
       if (relatedContext?.element) {
         const relatedElement = relatedContext.element;
@@ -152,6 +153,7 @@ export default {
         return !draggedElement.fixed;
       }
     },
+    // обновление списков резюме
     async updateLists() {
       this.loading = true;
       let response = await Api.get('/api/cv');
@@ -159,35 +161,42 @@ export default {
       this.resumeCards = response;
       this.loading = false;
     },
+    // открытие окна редактирования резюме
     clickCard(item) {
       item.fixed = !item.fixed;
       this.$router.push({ name: 'edit', params: { id: item.id } });
     },
   },
   computed: {
+    // все резюме
     resumeList() {
       return this.resumeCards;
     },
+    // новые резюме
     newStatus() {
       let list = this.resumeCards?.filter(item => item.Status === 'Новый');
       if (list.length) return list;
       else return {element: {Status: 'Новый'}};
     },
+    // резюме, которым назначено собеседование
     interviewStatus() {
       let list = this.resumeCards?.filter(item => item.Status === 'Назначено собеседование');
       if (list.length) return list;
       else return {element: {Status: 'Назначено собеседование'}};
     },
+    // принятые резюме
     acceptedStatus() {
       let list = this.resumeCards?.filter(item => item.Status === 'Принят');
       if (list.length) return list;
       else return {element: {Status: 'Принят'}};
     },
+    // резюме, которым отказано
     refusedStatus() {
       let list = this.resumeCards?.filter(item => item.Status === 'Отказ');
       if (list.length) return list;
       else return {element: {Status: 'Отказ'}};
     },
+    // для drag&drop
     dragOptions() {
       return {
         animation: 0,
@@ -198,6 +207,7 @@ export default {
     },
   },
   watch: {
+    // задержка drag&drop
     isDragging(newValue) {
       if (newValue) {
         this.delayedDragging = true;

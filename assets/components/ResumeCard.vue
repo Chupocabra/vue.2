@@ -15,6 +15,7 @@ export default {
   name: "ResumeCard",
   props: ['photo', 'fio', 'profession', 'bday'],
   computed: {
+    // считает возраст
     age(){
       return (new Date().getFullYear() - new Date(this.bday).getFullYear());
     }

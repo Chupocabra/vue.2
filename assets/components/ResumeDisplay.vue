@@ -145,6 +145,7 @@ export default {
       loading: false,
     }
   },
+  // элементы в экземпляре резюме
   computed: {
     r_city: function () {
       if (this.resume.city === '') return "г. Город";
@@ -229,6 +230,7 @@ export default {
     }
   },
   watch: {
+    // отображение конкретной информации об образовании
     education() {
       if (this.education === "Среднее") {
         this.showMore = 'none';
@@ -240,10 +242,12 @@ export default {
     },
   },
   methods: {
+    // проверка телефона
     validPhone: function (phone) {
       let reg = /^[0-9]{6,10}$/;
       return reg.test(phone);
     },
+    // проверка картинки
     validPicture: function (str) {
       console.log(str);
       let img = new Image();
@@ -257,10 +261,12 @@ export default {
         return "https://i.pinimg.com/originals/31/ec/2c/31ec2ce212492e600b8de27f38846ed7.jpg";
       };
     },
+    // проверка почты
     validEmail: function (email) {
       let regex = /^([a-zA-Z0-9_.+-])+@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
       return regex.test(email);
     },
+    // подпись после возраста
     age_postscript: function (age) {
       if (age % 100 > 9 && age % 100 < 20) {
         return age + " лет";
@@ -270,8 +276,9 @@ export default {
         else return age + " года";
       } else return age + " лет";
     },
+    // сохранение в БД
     async save() {
-      this.errors.emailError = false; this.errors.birthdayError = false; this.errors.phoneError = false;
+      // this.errors.emailError = false; this.errors.birthdayError = false; this.errors.phoneError = false;
       if (!(this.errors.emailError || this.errors.birthdayError || this.errors.phoneError)) {
         let data = {
           status: this.resume.status,
@@ -294,7 +301,7 @@ export default {
             secondEducation: this.resume.education.secondEducation,
           },
         };
-        console.log(data);
+        // console.log(data);
         if (!this.resumeEdit) {
           let result = await Api.post('/api/cv/add', data);
           if (result) alert('Резюме добавлено');
@@ -307,6 +314,7 @@ export default {
       } else alert('В резюме ошибка!');
       this.$router.push({name: 'ResumeList'});
     },
+    // при открытии резюме на редактирование
     async loadResume(id) {
       this.loading = true;
       let res = await Api.get(`/api/cv/${id}`);

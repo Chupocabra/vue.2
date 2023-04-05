@@ -50,6 +50,7 @@ export default {
     this.keySkills = this.modelValue;
   },
   methods: {
+    // добавить навык
     addNewKeySkill() {
       if (this.newKeySkillText!=''){
         this.keySkills.push({
@@ -59,6 +60,7 @@ export default {
         this.newKeySkillText='';
       }
     },
+    // обновить данные
     updateKeySkills() {
       this.$emit('update:modelValue', this.keySkills);
     }

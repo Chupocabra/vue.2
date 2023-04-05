@@ -96,6 +96,7 @@ export default {
     },
   },
   watch: {
+    // при изменении инпута показываем доступные учебные заведения
     education: {
       handler(val) {
         jsonp(`https://api.vk.com/method/database.getCities?country_id=1&q=${this.city}&count=1&v=5.131&access_token=${token.vkToken}`,
@@ -128,6 +129,7 @@ export default {
       },
       deep: true
     },
+    // разворачиваем или сворачиваем окно с дополнительными данными
     educationType: function () {
       this.education.type = this.educationType;
       if (this.educationType === "Среднее") {
@@ -140,18 +142,22 @@ export default {
     }
   },
   methods: {
+    // обновляем данные
     update() {
       this.$emit('update:modelValue', this.education);
     },
+    // ввод только цифр в поле год окончания
     isYear(e) {
       let char = String.fromCharCode(e.keyCode);
       if (/^[0-9]/.test(char)) return true;
       else e.preventDefault();
     },
+    // заведение выбрано
     insertSearch(event) {
       this.showHint = false;
       this.education.university = event.target.innerHTML;
     },
+    // добавить образование
     addNewEducation() {
       this.haveSecondEd = true;
       this.education.secondEducation.push({
@@ -164,6 +170,7 @@ export default {
       });
       this.$emit('update:modelValue', this.education);
     },
+    // удалить образование
     deleteEd(index) {
       this.education.secondEducation.splice(index, 1);
     }

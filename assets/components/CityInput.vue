@@ -40,6 +40,7 @@ export default {
     }
   },
   watch: {
+    // при изменении инпута обновляем подсказки
     inputValue: function () {
       jsonp(`https://api.vk.com/method/database.getCities?country_id=1&q=${this.inputValue}&count=4&v=5.131&access_token=${token.vkToken}`,
           null, (error, data) => {
@@ -57,6 +58,7 @@ export default {
     }
   },
   methods: {
+    // город выбран
     insertSearch(event) {
       this.showHint = false;
       this.$emit('update:modelValue', event.target.innerHTML);
